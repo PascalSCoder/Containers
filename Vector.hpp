@@ -3,6 +3,8 @@
 #include <algorithm>
 #include <iostream>
 #include <limits>
+#include <stdexcept>
+#include <iterator>
 
 template< class T, class Alloc = std::allocator<T> >
 class vector
@@ -30,7 +32,10 @@ public:
 	typedef Alloc				allocator_type;
 	typedef value_type&			reference;
 	typedef value_type const&	const_reference;
-	// typedef ...					iterator;
+
+	// experimental!
+	typedef std::iterator<std::random_access_iterator_tag, T>	iterator;
+
 	// typedef ...					const_iterator;
 	// typedef ...					reverse_iterator;
 	// typedef ...					const_reverse_iterator;
@@ -42,28 +47,26 @@ public:
 #pragma region Constructors/Destructor
 
 	// default (1)
-	vector() : _size(0), _capacity(0)
+	explicit vector (const allocator_type& alloc = allocator_type()) : _size(0), _capacity(0), _alloc(alloc)
 	{
 	}
 
 	// fill (2)	
 	explicit vector (size_type n, const value_type& val = value_type(),
-					const allocator_type& alloc = allocator_type())
+					const allocator_type& alloc = allocator_type()) : _size(0), _capacity(n), _alloc(alloc)
 	{
-		(void)alloc;
-
-		// _data = new value_type[n];
-		Realloc(n);
-		_size = n;
-		std::memset(_data, val, sizeof(value_type) * n);
+		_data = _alloc.allocate(n);
+		for (size_t i = 0; i < n; i++)
+		{
+			_alloc.construct(&(_data[i]), val);
+			_size++;
+		}
 	}
 
 	// range (3)
 	template <class InputIterator>
-	vector(InputIterator first, InputIterator last, const allocator_type& alloc = allocator_type())
+	vector(InputIterator first, InputIterator last, const allocator_type& alloc = allocator_type()) : _size(0), _capacity(0), _alloc(alloc)
 	{
-		(void)alloc;
-
 		while (first != last)
 		{
 			push_back(*first);
@@ -72,16 +75,217 @@ public:
 	}
 
 	// copy (4)
-	vector(const vector& ref);
+	vector(const vector& ref)
+	{
+		(void)ref;
+		throw std::runtime_error("Not implemented yet!");
+	}
 
 	~vector()
 	{
-		delete[] _data;
+		// deallocate
 	}
 
 #pragma endregion
 
 #pragma region Operator overloads
+
+#pragma endregion
+
+#pragma region Modifiers
+
+// UNFINISHED
+	// range (1)
+	template <class InputIterator>
+	void assign (InputIterator first, InputIterator last)
+	{
+		(void)first;
+		(void)last;
+	}
+
+// UNFINISHED
+	// fill (2)
+	void assign (size_type n, const value_type& val)
+	{
+		(void)n;
+		(void)val;
+	}
+
+	void push_back(const value_type& val)
+	{
+		if (_size == _capacity)
+			Realloc(_capacity == 0 ? 1 : _capacity * 2);
+
+		// add data to back
+		_data[_size] = val;
+		_size++;
+	}
+
+	void pop_back()
+	{
+		_size--;
+		_alloc.destroy(&_data[_size]);
+	}
+
+// UNFINISHED
+	// single element (1)
+	iterator insert (iterator position, const value_type& val)
+	{
+		(void)position;
+		(void)val;
+	}
+
+// UNFINISHED
+	// fill (2)
+	void insert (iterator position, size_type n, const value_type& val)
+	{
+		(void)position;
+		(void)n;
+		(void)val;
+	}
+
+// UNFINISHED
+	// range (3)
+	template <class InputIterator>
+	void insert (iterator position, InputIterator first, InputIterator last)
+	{
+		(void)position;
+		(void)first;
+		(void)last;
+	}
+
+// UNFINISHED
+	iterator erase(iterator position)
+	{
+		_alloc.destroy(position);
+		// move data
+	}
+
+// UNFINISHED
+	iterator erase(iterator first, iterator last)
+	{
+		while (first < last)
+		{
+			_alloc.destroy(first);
+			first++;
+		}
+		// move data
+	}
+
+// UNFINISHED / UNTESTED
+	void swap(vector& x)
+	{
+		vector tmp = x;
+		x = *this;
+		*this = tmp;
+	}
+
+	void clear()
+	{
+		while (_size > 0)
+		{
+			_alloc.destroy(&_data[_size - 1]);
+			_size--;
+		}
+	}
+
+#pragma endregion
+
+#pragma region Capacity
+
+	size_type size() const
+	{
+		return _size;
+	}
+
+	size_type max_size() const
+	{
+		return _alloc.max_size();
+	}
+
+	void resize(size_type n, value_type val = value_type())
+	{
+		while (_size > n)
+		{
+			_alloc.destroy(&_data[_size - 1]);
+			_size--;
+		}
+		if (n > _capacity)
+			n > _capacity * 2 ? Realloc(n) : Realloc(_capacity * 2);
+		while (_size < n)
+		{
+			_alloc.construct(&_data[_size], val);
+			_size++;
+		}
+	}
+
+	size_type capacity() const
+	{
+		return _capacity;
+	}
+
+	bool empty() const
+	{
+		return _size == 0;
+	}
+
+	void reserve (size_type n)
+	{
+		if (n > _capacity)
+			Realloc(n);
+	}
+
+#pragma endregion
+
+#pragma region Iterators
+
+	// iterator begin()
+	// {
+	// 	return _data;
+	// }
+
+	// const_iterator begin() const
+	// {
+	// 	return _data;
+	// }
+
+#pragma endregion
+
+#pragma region Element Access
+
+	reference front()
+	{
+		return *_data;
+	}
+
+	const_reference front() const
+	{
+		return *_data;
+	}
+
+	reference back()
+	{
+		return *(_data + (_size - 1));
+	}
+
+	const_reference back() const
+	{
+		return *(_data + (_size - 1));
+	}
+
+	reference at (size_type n)
+	{
+		if (n >= _size)
+			throw std::out_of_range("vector::at");
+		return *(_data[n]);
+	}
+
+	const_reference at (size_type n) const
+	{
+		if (n >= _size)
+			throw std::out_of_range("vector::at");
+		return *(_data[n]);
+	}
 
 	reference operator[] (size_type n)
 	{
@@ -95,71 +299,26 @@ public:
 
 #pragma endregion
 
-	void push_back(const value_type& val)
+	allocator_type get_allocator() const
 	{
-		if (_size == _capacity)
-			Realloc(_capacity == 0 ? 1 : _capacity * 2);
-		// add data to back
-		_data[_size] = val;
-		_size++;
-	}
-
-	size_type size() const
-	{
-		return _size;
-	}
-
-	size_type capacity() const
-	{
-		return _capacity;
-	}
-
-	size_type max_size() const
-	{
-		// why is this output different from std::vector?
-		return std::numeric_limits<size_type>::max();
-	}
-
-	/*
-		Change size
-		Resizes the container so that it contains n elements.
-
-		If n is smaller than the current container size, the content is reduced to its first n elements, removing those beyond (and destroying them).
-
-		If n is greater than the current container size, the content is expanded by inserting at the end as many elements as needed to reach a size of n. If val is specified, the new elements are initialized as copies of val, otherwise, they are value-initialized.
-
-		If n is also greater than the current container capacity, an automatic reallocation of the allocated storage space takes place.
-
-		Notice that this function changes the actual content of the container by inserting or erasing elements from it.
-	*/
-	void resize(size_type n, value_type val = value_type())
-	{
-		if (n > _capacity)
-			Realloc(n);
-		while (_size < n)
-			push_back(val);
-		while (_size > n)
-		{
-			// destroy objects?
-			_size--;
-		}
+		return _alloc;
 	}
 
 private:
-	value_type*	_data;
-	size_type	_size;
-	size_type	_capacity;
+	value_type*		_data;
+	size_type		_size;
+	size_type		_capacity;
+	allocator_type	_alloc;
 
-	void	Realloc(size_type newSize)
+	void	Realloc(size_type n)
 	{
-		// edge case with overflow?
-		// are we allowed to call std::realloc?
+		// std::cout << "realloc " << _size << "/" << _capacity << " to: " << _size << "/" << n << std::endl;
+		value_type* newData = _alloc.allocate(n);
+		std::memcpy(newData, _data, _size * sizeof(value_type));
+		_alloc.deallocate(_data, _capacity);
 
-		std::cout << "realloc from: " << _capacity << " to " << newSize << std::endl;
-		_capacity = newSize;
-		value_type* data = new value_type[_capacity];
-		std::memcpy(data, _data, _size * sizeof(value_type));
-		delete[] _data;
-		_data = data;
+		_data = newData;
+		_capacity = n;
 	}
+
 };

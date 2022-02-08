@@ -32,29 +32,71 @@ class Data
 };
 
 template<class V>
-void	Test(V& vec)
+void	PrintSizes(V const& vec)
 {
-	std::cout << vec.size() << std::endl;
-	std::cout << vec.capacity() << std::endl;
-	
-	vec.push_back(42);
-	
-	std::cout << vec.size() << std::endl;
-	std::cout << vec.capacity() << std::endl;
+	std::cout << "Size: " << vec.size() << "/" << vec.capacity() << std::endl;
+}
 
+template<class V>
+void	PrintValues(V const& vec)
+{
 	for (size_t i = 0; i < vec.size(); i++)
 	{
-		std::cout << " " << vec[i];
+		std::cout << vec[i];
+		std::cout << " ";
 	}
 	std::cout << std::endl;
+}
 
-	std::cout << "Max size: " << vec.max_size() << std::endl;
+template<class V>
+void	Test(V& vec)
+{
+	PrintSizes(vec);
+	vec.push_back(42);
+
+	PrintSizes(vec);
+
+	vec.resize(3);
+	PrintSizes(vec);
+	vec.resize(9);
+	PrintSizes(vec);
+	vec.resize(61);
+	PrintSizes(vec);
+	
+	while (vec.size() > 3)
+	{
+		vec.pop_back();
+	}
+	vec[0] = 42;
+	vec[1] = 21;
+	vec[2] = 10;
+	PrintSizes(vec);
+	PrintValues(vec);
+
+	// vec.resize(42);
+	// PrintSizes(vec);
+
+	std::cout << "front: " << vec.front() << std::endl;
+	std::cout << "back: " << vec.back() << std::endl;
+
+	vec.reserve(124);
+	PrintSizes(vec);
+	vec.reserve(111);
+	PrintSizes(vec);
+	vec.reserve(125);
+	PrintSizes(vec);
+
+	// std::vector<int>::iterator begin = vec.begin();
+	// std::cout << *begin << std::endl;
+
+	// std::cout << "Max size: " << vec.max_size() << std::endl;
 }
 
 int main()
 {
 	std::vector<int> stdVec(5);
 	vector<int> ftVec(5);
+
 
 	PrintTitle("STL Vector");
 	Test(stdVec);
