@@ -4,7 +4,11 @@
 #include <iostream>
 #include <limits>
 #include <stdexcept>
-#include <iterator>
+
+#include "iterator_traits.hpp"
+#include "iterator.hpp"
+
+// #include <iterator>
 
 template< class T, class Alloc = std::allocator<T> >
 class vector
@@ -14,32 +18,41 @@ public:
 #pragma region Type definitions
 
 /*
-	value_type	The first template parameter (T)	
-	allocator_type	The second template parameter (Alloc)	defaults to: allocator<value_type>
-	reference	allocator_type::reference	for the default allocator: value_type&
-	const_reference	allocator_type::const_reference	for the default allocator: const value_type&
-	pointer	allocator_type::pointer	for the default allocator: value_type*
-	const_pointer	allocator_type::const_pointer	for the default allocator: const value_type*
-	iterator	a random access iterator to value_type	convertible to const_iterator
-	const_iterator	a random access iterator to const value_type	
-	reverse_iterator	reverse_iterator<iterator>	
+	value_type				The first template parameter (T)	
+	allocator_type			The second template parameter (Alloc)	defaults to: allocator<value_type>
+	reference				allocator_type::reference	for the default allocator: value_type&
+	const_reference			allocator_type::const_reference	for the default allocator: const value_type&
+	pointer					allocator_type::pointer	for the default allocator: value_type*
+	const_pointer			allocator_type::const_pointer	for the default allocator: const value_type*
+	iterator				a random access iterator to value_type	convertible to const_iterator
+	const_iterator			a random access iterator to const value_type	
+	reverse_iterator		reverse_iterator<iterator>	
 	const_reverse_iterator	reverse_iterator<const_iterator>	
-	difference_type	a signed integral type, identical to: iterator_traits<iterator>::difference_type	usually the same as ptrdiff_t
-	size_type	an unsigned integral type that can represent any non-negative value of difference_type	usually the same as size_t
+	difference_type			a signed integral type, identical to: iterator_traits<iterator>::difference_type	usually the same as ptrdiff_t
+	size_type				an unsigned integral type that can represent any non-negative value of difference_type	usually the same as size_t
 */
 
 	typedef T					value_type;
 	typedef Alloc				allocator_type;
 	typedef value_type&			reference;
 	typedef value_type const&	const_reference;
+	typedef value_type*			pointer;
+	typedef const value_type*	const_pointer;
+
+	typedef T*					iterator;
+	typedef T const*			const_iterator;
 
 	// experimental!
-	typedef std::iterator<std::random_access_iterator_tag, T>	iterator;
 
-	// typedef ...					const_iterator;
-	// typedef ...					reverse_iterator;
+	// typedef iterator<random_access_iterator_tag, pointer>	iterator;
+	// typedef typename iterator<random_access_iterator_tag, T>::pointer	iterator;
+
+	// typedef reverse_iterator<random_access_iterator_tag, T>		reverse_iterator;
+
+	typedef reverse_iterator<iterator>		reverse_iterator;
 	// typedef ...					const_reverse_iterator;
-	// typedef ...					difference_type;
+
+	typedef ptrdiff_t			difference_type;
 	typedef size_t				size_type;
 
 #pragma endregion
@@ -83,7 +96,7 @@ public:
 
 	~vector()
 	{
-		// deallocate
+		_alloc.deallocate(_data, _capacity);
 	}
 
 #pragma endregion
@@ -158,7 +171,9 @@ public:
 	iterator erase(iterator position)
 	{
 		_alloc.destroy(position);
-		// move data
+		std::cout << _data + _size - position << std::endl;
+		std::memmove(position, position + 1, (_data + _size) - position);
+		return position + 1;
 	}
 
 // UNFINISHED
@@ -239,14 +254,49 @@ public:
 
 #pragma region Iterators
 
-	// iterator begin()
+/*
+	begin	Return iterator to beginning (public member function )
+	end		Return iterator to end (public member function )
+	rbegin	Return reverse iterator to reverse beginning (public member function )
+	rend	Return reverse iterator to reverse end (public member function )
+*/
+	iterator begin()
+	{
+		return _data;
+	}
+
+	const_iterator begin() const
+	{
+		return _data;
+	}
+
+	iterator end()
+	{
+		return _data + _size;
+	}
+
+	const_iterator end() const
+	{
+		return _data + _size;
+	}
+
+	reverse_iterator rbegin()
+	{
+		return reverse_iterator(end());
+	}
+
+	// const_reverse_iterator rbegin()
 	// {
-	// 	return _data;
 	// }
 
-	// const_iterator begin() const
+	reverse_iterator rend()
+	{
+		return reverse_iterator(begin());
+		// return _data + _size;
+	}
+
+	// const_reverse_iterator rend()
 	// {
-	// 	return _data;
 	// }
 
 #pragma endregion
@@ -273,26 +323,26 @@ public:
 		return *(_data + (_size - 1));
 	}
 
-	reference at (size_type n)
+	reference at(size_type n)
 	{
 		if (n >= _size)
 			throw std::out_of_range("vector::at");
 		return *(_data[n]);
 	}
 
-	const_reference at (size_type n) const
+	const_reference at(size_type n) const
 	{
 		if (n >= _size)
 			throw std::out_of_range("vector::at");
 		return *(_data[n]);
 	}
 
-	reference operator[] (size_type n)
+	reference operator[](size_type n)
 	{
 		return _data[n];
 	}
 
-	const_reference operator[] (size_type n) const
+	const_reference operator[](size_type n) const
 	{
 		return _data[n];
 	}
@@ -312,7 +362,6 @@ private:
 
 	void	Realloc(size_type n)
 	{
-		// std::cout << "realloc " << _size << "/" << _capacity << " to: " << _size << "/" << n << std::endl;
 		value_type* newData = _alloc.allocate(n);
 		std::memcpy(newData, _data, _size * sizeof(value_type));
 		_alloc.deallocate(_data, _capacity);

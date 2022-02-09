@@ -86,10 +86,51 @@ void	Test(V& vec)
 	vec.reserve(125);
 	PrintSizes(vec);
 
-	// std::vector<int>::iterator begin = vec.begin();
-	// std::cout << *begin << std::endl;
-
+	typename V::iterator begin = vec.begin();
+	std::cout << "begin: " << *begin << std::endl;
+	typename V::iterator end = vec.end();
+	while (begin != end)
+	{
+		std::cout << " " << *begin;
+		begin++;
+	}
+	std::cout << std::endl;
+	vec.erase(begin - 2);
+	begin = vec.begin();
+	std::cout << "begin: " << *begin << std::endl;
+	end = vec.end();
+	while (begin != end)
+	{
+		std::cout << " " << *begin;
+		begin++;
+	}
+	std::cout << std::endl;
 	// std::cout << "Max size: " << vec.max_size() << std::endl;
+}
+
+template<class V, class T>
+void	PushBackRange(V& vec, T begin, T end)
+{
+	while (begin != end)
+	{
+		vec.push_back(*begin);
+		begin++;
+	}
+}
+
+template<class V>
+void	Test2(V& vec)
+{
+	typename V::reverse_iterator begin = vec.rbegin();
+	typename V::reverse_iterator end = vec.rend();
+	int arr[] = { 12, 24, 36, 48, 60};
+	PushBackRange(vec, arr, arr + 5);
+	while (begin != end)
+	{
+		std::cout << " " << *begin;
+		begin++;
+	}
+	std::cout << std::endl;
 }
 
 int main()
@@ -97,9 +138,10 @@ int main()
 	std::vector<int> stdVec(5);
 	vector<int> ftVec(5);
 
+	// std::vector<int>::reverse_iterator
 
 	PrintTitle("STL Vector");
-	Test(stdVec);
+	Test2(stdVec);
 	PrintTitle("FT Vector");
-	Test(ftVec);
+	Test2(ftVec);
 }
