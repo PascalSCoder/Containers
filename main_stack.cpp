@@ -123,13 +123,13 @@ void InitiateTests(st& stck)
 int main(int argc, char **argv)
 {
 	std::stack<int> stl_stack;
-	stack<int> ft_stack;
+	ft::stack<int> ft_stack;
 
-	for (size_t i = 1; i < argc; i++)
+	for (int i = 1; i < argc; i++)
 	{
-		if (argv[i] == "ft")
+		if (std::string(argv[i]) == std::string("ft"))
 			InitiateTests(ft_stack);
-		else if (argv[i] == "stl")
+		else if (std::string(argv[i]) == std::string("stl"))
 			InitiateTests(stl_stack);
 	}
 }

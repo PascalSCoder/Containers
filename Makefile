@@ -8,7 +8,7 @@ CFLAGS	=	-I . -std=c++98 -pedantic -Wall -Wextra# -Werror
 all: $(NAME)
 
 stack: main_stack.cpp obj/main_stack.o Stack.hpp
-	$(CC) $(CFLAGS) obj/main_stack.o
+	$(CC) $(CFLAGS) Stack.hpp obj/main_stack.o
 
 $(NAME): $(OBJ)
 	$(CC) $(CFLAGS) $(OBJ) -o $(NAME)

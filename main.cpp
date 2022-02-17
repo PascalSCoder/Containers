@@ -136,7 +136,7 @@ void	Test2(V& vec)
 int main()
 {
 	std::vector<int> stdVec(5);
-	vector<int> ftVec(5);
+	ft::vector<int> ftVec(5);
 
 	// std::vector<int>::reverse_iterator
 

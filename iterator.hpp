@@ -3,6 +3,9 @@
 #include <iostream>
 #include "iterator_traits.hpp"
 
+namespace ft
+{
+
 template <class Category, class T, class Distance = ptrdiff_t,
 		class Pointer = T*, class Reference = T&>
 struct iterator
@@ -134,3 +137,5 @@ private:
 	Iterator _iterator;
 	// difference_type	_offset;
 };
+
+}

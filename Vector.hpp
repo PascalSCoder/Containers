@@ -8,7 +8,8 @@
 #include "iterator_traits.hpp"
 #include "iterator.hpp"
 
-// #include <iterator>
+namespace ft
+{
 
 template< class T, class Alloc = std::allocator<T> >
 class vector
@@ -32,28 +33,18 @@ public:
 	size_type				an unsigned integral type that can represent any non-negative value of difference_type	usually the same as size_t
 */
 
-	typedef T					value_type;
-	typedef Alloc				allocator_type;
-	typedef value_type&			reference;
-	typedef value_type const&	const_reference;
-	typedef value_type*			pointer;
-	typedef const value_type*	const_pointer;
-
-	typedef T*					iterator;
-	typedef T const*			const_iterator;
-
-	// experimental!
-
-	// typedef iterator<random_access_iterator_tag, pointer>	iterator;
-	// typedef typename iterator<random_access_iterator_tag, T>::pointer	iterator;
-
-	// typedef reverse_iterator<random_access_iterator_tag, T>		reverse_iterator;
-
-	typedef reverse_iterator<iterator>		reverse_iterator;
-	// typedef ...					const_reverse_iterator;
-
-	typedef ptrdiff_t			difference_type;
-	typedef size_t				size_type;
+	typedef T									value_type;
+	typedef Alloc								allocator_type;
+	typedef value_type&							reference;
+	typedef value_type const&					const_reference;
+	typedef value_type*							pointer;
+	typedef const value_type*					const_pointer;
+	typedef T*									iterator;
+	typedef T const*							const_iterator;
+	typedef ft::reverse_iterator<iterator>			reverse_iterator;
+	typedef ft::reverse_iterator<const_iterator>	const_reverse_iterator; // reverse_iterator<const_iterator> const instead?
+	typedef ptrdiff_t							difference_type;
+	typedef size_t								size_type;
 
 #pragma endregion
 
@@ -98,10 +89,6 @@ public:
 	{
 		_alloc.deallocate(_data, _capacity);
 	}
-
-#pragma endregion
-
-#pragma region Operator overloads
 
 #pragma endregion
 
@@ -292,7 +279,6 @@ public:
 	reverse_iterator rend()
 	{
 		return reverse_iterator(begin());
-		// return _data + _size;
 	}
 
 	// const_reverse_iterator rend()
@@ -371,3 +357,5 @@ private:
 	}
 
 };
+
+}
