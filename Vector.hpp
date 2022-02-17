@@ -340,6 +340,24 @@ public:
 		return _alloc;
 	}
 
+	// template <class Type, class Allocator>
+	friend bool operator==(const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs);
+	friend bool operator!=(const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs);
+	friend bool operator> (const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs);
+	friend bool operator>=(const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs);
+	friend bool operator< (const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs);
+	friend bool operator<=(const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs);
+	// template <class V, class C>
+	// friend bool operator!=(const stack<V,C>& lhs, const stack<V,C>& rhs);
+	// template <class V, class C>
+	// friend bool operator< (const stack<V,C>& lhs, const stack<V,C>& rhs);
+	// template <class V, class C>
+	// friend bool operator<=(const stack<V,C>& lhs, const stack<V,C>& rhs);
+	// template <class V, class C>
+	// friend bool operator> (const stack<V,C>& lhs, const stack<V,C>& rhs);
+	// template <class V, class C>
+	// friend bool operator>=(const stack<V,C>& lhs, const stack<V,C>& rhs);
+
 private:
 	value_type*		_data;
 	size_type		_size;
@@ -356,17 +374,63 @@ private:
 		_capacity = n;
 	}
 
+
+
 };
 
+#pragma region Comparison Overloads
+
+	template <class T, class Alloc>
+	bool operator==(const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs)
+	{
+		if (lhs.size() != rhs.size())
+			return false;
+		for (size_t i = 0; i < lhs.size(); i++)
+		{
+			if (lhs[i] != rhs[i])
+				return false;
+		}
+		return true;
+	}
+
+	template <class T, class Alloc>
+	bool operator!=(const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs)
+	{
+		return !(lhs == rhs);
+	}
+
+	template <class T, class Alloc>
+	bool operator> (const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs)
+	{
+		(void)lhs;
+		(void)rhs;
+		return false;
+	}
+
+	template <class T, class Alloc>
+	bool operator>=(const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs)
+	{
+		(void)lhs;
+		(void)rhs;
+		return false;
+	}
+
+	template <class T, class Alloc>
+	bool operator< (const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs)
+	{
+		(void)lhs;
+		(void)rhs;
+		return false;
+	}
+
+	template <class T, class Alloc>
+	bool operator<=(const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs)
+	{
+		(void)lhs;
+		(void)rhs;
+		return false;
+	}
+
+#pragma endregion
+
 }
-
-// relational operators (stack)
-
-	// if (lhs.size() != rhs.size())
-	// 	return false;
-	// for (size_t i = 0; i < lhs.size(); i++)
-	// {
-	// 	if (lhs[i] != rhs[i])
-	// 		return false;
-	// }
-	// return true;
