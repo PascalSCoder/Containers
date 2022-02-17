@@ -121,22 +121,33 @@ void	PushBackRange(V& vec, T begin, T end)
 template<class V>
 void	Test2(V& vec)
 {
-	typename V::reverse_iterator begin = vec.rbegin();
-	typename V::reverse_iterator end = vec.rend();
-	int arr[] = { 12, 24, 36, 48, 60};
+	int arr[] = { 12, 24, 36, 48, 60 };
 	PushBackRange(vec, arr, arr + 5);
+
+	typename V::reverse_iterator rbegin = vec.rbegin();
+	typename V::reverse_iterator rend = vec.rend();
+	typename V::iterator begin = vec.begin();
+	typename V::iterator end = vec.end();
+
+	std::cout << "Forward:";
 	while (begin != end)
 	{
 		std::cout << " " << *begin;
 		begin++;
+	}
+	std::cout << std::endl << "Reverse:";
+	while (rbegin != rend)
+	{
+		std::cout << " " << *rbegin;
+		rbegin++;
 	}
 	std::cout << std::endl;
 }
 
 int main()
 {
-	std::vector<int> stdVec(5);
-	ft::vector<int> ftVec(5);
+	std::vector<int> stdVec;
+	ft::vector<int> ftVec;
 
 	// std::vector<int>::reverse_iterator
 

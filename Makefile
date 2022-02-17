@@ -13,7 +13,7 @@ stack: main_stack.cpp obj/main_stack.o Stack.hpp
 $(NAME): $(OBJ)
 	$(CC) $(CFLAGS) $(OBJ) -o $(NAME)
 
-obj/%.o: %.cpp Vector.hpp iterator_traits.hpp iterator.hpp
+obj/%.o: %.cpp Vector.hpp iterator_traits.hpp reverse_iterator.hpp
 	@mkdir -p obj/
 	$(CC) $(CFLAGS) -c $< -o $@
 

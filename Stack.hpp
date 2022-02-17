@@ -104,14 +104,3 @@ public:
 #pragma endregion
 
 }
-
-// relational operators (stack)
-
-	// if (lhs.size() != rhs.size())
-	// 	return false;
-	// for (size_t i = 0; i < lhs.size(); i++)
-	// {
-	// 	if (lhs[i] != rhs[i])
-	// 		return false;
-	// }
-	// return true;

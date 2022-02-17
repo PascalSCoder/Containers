@@ -6,7 +6,7 @@
 #include <stdexcept>
 
 #include "iterator_traits.hpp"
-#include "iterator.hpp"
+#include "reverse_iterator.hpp"
 
 namespace ft
 {
@@ -269,7 +269,7 @@ public:
 
 	reverse_iterator rbegin()
 	{
-		return reverse_iterator(end());
+		return reverse_iterator(end() - 1);
 	}
 
 	// const_reverse_iterator rbegin()
@@ -278,7 +278,7 @@ public:
 
 	reverse_iterator rend()
 	{
-		return reverse_iterator(begin());
+		return reverse_iterator(begin() - 1);
 	}
 
 	// const_reverse_iterator rend()
@@ -359,3 +359,14 @@ private:
 };
 
 }
+
+// relational operators (stack)
+
+	// if (lhs.size() != rhs.size())
+	// 	return false;
+	// for (size_t i = 0; i < lhs.size(); i++)
+	// {
+	// 	if (lhs[i] != rhs[i])
+	// 		return false;
+	// }
+	// return true;

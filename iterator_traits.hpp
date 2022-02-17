@@ -43,6 +43,7 @@ struct iterator_traits
 
 
 
+// SPECIALIZATIONS NOT COMPLETE / NOT TESTED!
 // do we need to dereference T for specializations?
 
 // Specialization for <T *>:
