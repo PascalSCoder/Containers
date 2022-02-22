@@ -5,8 +5,8 @@
 #include <limits>
 #include <stdexcept>
 
-#include "iterator_traits.hpp"
-#include "reverse_iterator.hpp"
+#include "../utils/iterator_traits.hpp"
+#include "../utils/reverse_iterator.hpp"
 
 namespace ft
 {
@@ -78,6 +78,7 @@ public:
 		}
 	}
 
+// no copy ctor yet!
 	// copy (4)
 	vector(const vector& ref)
 	{
@@ -85,9 +86,10 @@ public:
 		throw std::runtime_error("Not implemented yet!");
 	}
 
+// no deallocation yet!
 	~vector()
 	{
-		_alloc.deallocate(_data, _capacity);
+		// _alloc.deallocate(_data, _capacity);
 	}
 
 #pragma endregion
@@ -367,8 +369,13 @@ private:
 	void	Realloc(size_type n)
 	{
 		value_type* newData = _alloc.allocate(n);
-		std::memcpy(newData, _data, _size * sizeof(value_type));
-		_alloc.deallocate(_data, _capacity);
+
+		// if there was reserved memory already, copy data and deallocate
+		if (_capacity != 0)
+		{
+			std::memcpy(newData, _data, _size * sizeof(value_type));
+			_alloc.deallocate(_data, _capacity);
+		}
 
 		_data = newData;
 		_capacity = n;
