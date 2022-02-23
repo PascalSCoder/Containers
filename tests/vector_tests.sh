@@ -1,2 +1,2 @@
 rm test
-g++ VectorTestCases.cpp PascalTest.cpp -o test; ./test
+g++ VectorTestCases.cpp -o test; ./test
