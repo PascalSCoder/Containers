@@ -80,10 +80,15 @@ public:
 
 // no copy ctor yet!
 	// copy (4)
-	vector(const vector& ref)
+	vector(const vector& ref) : _size(0), _capacity(0), _alloc(ref._alloc)
 	{
-		(void)ref;
-		throw std::runtime_error("Not implemented yet!");
+		// Realloc sets capacity
+		// Realloc(ref.size());
+		for (size_t i = 0; i < ref.size(); i++)
+		{
+			push_back(ref[i]);
+		}
+		// throw std::runtime_error("Not implemented yet!");
 	}
 
 // no deallocation yet!
@@ -101,22 +106,25 @@ public:
 	template <class InputIterator>
 	void assign (InputIterator first, InputIterator last)
 	{
-		(void)first;
-		(void)last;
+		while (first++ != last)
+		{
+			push_back(*first);
+		}
 	}
 
 // UNFINISHED
 	// fill (2)
 	void assign (size_type n, const value_type& val)
 	{
-		(void)n;
-		(void)val;
+		for (size_type i = 0; i < n; i++)
+		{
+			push_back(val);
+		}
 	}
 
 	void push_back(const value_type& val)
 	{
-		if (_size == _capacity)
-			Realloc(_capacity == 0 ? 1 : _capacity * 2);
+		MemReserve();
 
 		// add data to back
 		_data[_size] = val;
@@ -131,19 +139,29 @@ public:
 
 // UNFINISHED
 	// single element (1)
+	// Returns an iterator that points to the first of the newly inserted elements.
 	iterator insert (iterator position, const value_type& val)
 	{
-		(void)position;
-		(void)val;
+		size_type pos = position - begin();
+		MemReserve();
+		iterator first = MoveData(pos, 1);
+		*first = val; // need to call _alloc.construct(val) here?
+		_size++;
+		return first;
 	}
 
 // UNFINISHED
 	// fill (2)
 	void insert (iterator position, size_type n, const value_type& val)
 	{
-		(void)position;
-		(void)n;
-		(void)val;
+		size_type pos = position - begin();
+		MemReserve(_size + n);
+		iterator first = MoveData(pos, n);
+		for (size_type i = 0; i < n; i++)
+		{
+			first[i] = val; // need to call _alloc.construct(val) here?
+		}
+		_size += n;
 	}
 
 // UNFINISHED
@@ -151,9 +169,17 @@ public:
 	template <class InputIterator>
 	void insert (iterator position, InputIterator first, InputIterator last)
 	{
-		(void)position;
-		(void)first;
-		(void)last;
+		size_type pos = position - begin();
+		size_type n = last - first;
+		MemReserve(_size + n);
+		iterator insertPos = MoveData(pos, n);
+		while (first != last)
+		{
+			*insertPos = *first;
+			insertPos++;
+			first++;
+		}
+		_size += n;
 	}
 
 // UNFINISHED
@@ -214,8 +240,8 @@ public:
 			_alloc.destroy(&_data[_size - 1]);
 			_size--;
 		}
-		if (n > _capacity)
-			n > _capacity * 2 ? Realloc(n) : Realloc(_capacity * 2);
+		// if (n > _capacity)
+			// n > _capacity * 2 ? Realloc(n) : Realloc(_capacity * 2);
 		while (_size < n)
 		{
 			_alloc.construct(&_data[_size], val);
@@ -235,8 +261,8 @@ public:
 
 	void reserve (size_type n)
 	{
-		if (n > _capacity)
-			Realloc(n);
+		// if (n > _capacity)
+			// Realloc(n);
 	}
 
 #pragma endregion
@@ -342,23 +368,25 @@ public:
 		return _alloc;
 	}
 
-	// template <class Type, class Allocator>
-	friend bool operator==(const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs);
-	friend bool operator!=(const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs);
-	friend bool operator> (const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs);
-	friend bool operator>=(const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs);
-	friend bool operator< (const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs);
-	friend bool operator<=(const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs);
-	// template <class V, class C>
-	// friend bool operator!=(const stack<V,C>& lhs, const stack<V,C>& rhs);
-	// template <class V, class C>
-	// friend bool operator< (const stack<V,C>& lhs, const stack<V,C>& rhs);
-	// template <class V, class C>
-	// friend bool operator<=(const stack<V,C>& lhs, const stack<V,C>& rhs);
-	// template <class V, class C>
-	// friend bool operator> (const stack<V,C>& lhs, const stack<V,C>& rhs);
-	// template <class V, class C>
-	// friend bool operator>=(const stack<V,C>& lhs, const stack<V,C>& rhs);
+	template <class TT, class Allocc>
+	friend bool operator==(const vector<TT,Allocc>& lhs, const vector<TT,Allocc>& rhs);
+	template <class TT, class Allocc>
+	friend bool operator!=(const vector<TT,Allocc>& lhs, const vector<TT,Allocc>& rhs);
+	template <class TT, class Allocc>
+	friend bool operator> (const vector<TT,Allocc>& lhs, const vector<TT,Allocc>& rhs);
+	template <class TT, class Allocc>
+	friend bool operator>=(const vector<TT,Allocc>& lhs, const vector<TT,Allocc>& rhs);
+	template <class TT, class Allocc>
+	friend bool operator< (const vector<TT,Allocc>& lhs, const vector<TT,Allocc>& rhs);
+	template <class TT, class Allocc>
+	friend bool operator<=(const vector<TT,Allocc>& lhs, const vector<TT,Allocc>& rhs);
+
+	// friend bool operator==(const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs);
+	// friend bool operator!=(const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs);
+	// friend bool operator> (const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs);
+	// friend bool operator>=(const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs);
+	// friend bool operator< (const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs);
+	// friend bool operator<=(const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs);
 
 private:
 	value_type*		_data;
@@ -366,22 +394,57 @@ private:
 	size_type		_capacity;
 	allocator_type	_alloc;
 
-	void	Realloc(size_type n)
+	// If neccessary, increases capacity to req, otherwise does nothing.
+	void MemReserve(size_type req)
 	{
-		value_type* newData = _alloc.allocate(n);
+		if (req <= _capacity) // capacity is large enough
+			return;
 
-		// if there was reserved memory already, copy data and deallocate
-		if (_capacity != 0)
+		value_type* newData = _alloc.allocate(req);
+		if (_capacity != 0) // if _data was already allocated
 		{
 			std::memcpy(newData, _data, _size * sizeof(value_type));
 			_alloc.deallocate(_data, _capacity);
 		}
 
 		_data = newData;
-		_capacity = n;
+		_capacity = req;
 	}
 
+	// If full capacity is used, increase capacity.
+	void MemReserve()
+	{
+		if (_capacity == 0)
+			MemReserve(1);
+		else if (_size == _capacity) // size should never by higher than capacity, so >= should not be neccessary
+			MemReserve(_capacity * 2);
+		else if (_size > _capacity) // TEMPORARY DEV CHECK WHICH SHOULD NOT BE REACHED, REMOVE BEFORE PUBLISH
+			throw std::runtime_error("Size exceeded capacity exception.");
+	}
 
+	iterator MoveData(size_type index, size_type n)
+	{
+		iterator first = begin();
+		iterator last = end();
+		first += index;
+		std::memmove(first + n, first, (last - first) * sizeof(value_type));
+		return first;
+	}
+
+	// void	Realloc(size_type n)
+	// {
+	// 	value_type* newData = _alloc.allocate(n);
+
+	// 	// if there already was memory reserved, copy data and deallocate
+	// 	if (_capacity != 0)
+	// 	{
+	// 		std::memcpy(newData, _data, _size * sizeof(value_type));
+	// 		_alloc.deallocate(_data, _capacity);
+	// 	}
+
+	// 	_data = newData;
+	// 	_capacity = n;
+	// }
 
 };
 
@@ -409,8 +472,13 @@ private:
 	template <class T, class Alloc>
 	bool operator> (const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs)
 	{
-		(void)lhs;
-		(void)rhs;
+		for (size_t i = 0; i < rhs.size(); i++)
+		{
+			if (lhs[i] > rhs[i])
+				return true;
+		}
+		if (lhs.size() > rhs.size())
+			return true;
 		return false;
 	}
 
