@@ -35,7 +35,6 @@ void CaseInsertSingles()
 
 void CaseInsertN()
 {
-	vectors.Clear();
 	vectors.push_back(42);
 	vectors.insert(1, 3333, 99);
 }

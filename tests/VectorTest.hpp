@@ -11,6 +11,8 @@ private:
 	ft::vector<T> _ftVec;
 	std::vector<T> _stdVec;
 
+#pragma region Checks
+
 	// Returns whether ft::vector and std::vector are equal in size.
 	bool CheckSize() const
 	{
@@ -32,6 +34,9 @@ private:
 		return true;
 	}
 
+#pragma endregion
+
+
 public:
 	VectorTest()
 	{
@@ -39,6 +44,9 @@ public:
 		this->_checks.push_back((SubCheck){.func = &VectorTest<T>::CheckCapacity, .title = "Capacity"});
 		this->_checks.push_back((SubCheck){.func = &VectorTest<T>::CheckData, .title = "Data"});
 	}
+
+
+#pragma region API
 
 	// Clear the currently stored vectors.
 	void Clear()
@@ -80,9 +88,12 @@ public:
 		_stdVec.insert(_stdVec.begin() + position, begin, end);
 	}
 
+#pragma endregion
+
 	template<class TT>
 	friend std::ostream& operator<<(std::ostream& os, VectorTest<TT> const& ref);
 };
+
 
 template<class T>
 std::ostream& operator<<(std::ostream& os, VectorTest<T> const& ref)
