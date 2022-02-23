@@ -18,14 +18,18 @@
 
 #pragma endregion
 
-struct SubCheck
+template<class T>
+struct Check
 {
-	const char	*title;
-	bool		(*func)();
+	bool (T::*func)() const;
+	char const* title;
 };
 
+template<class T>
 class PascalTest
 {
+	typedef struct Check<T> SubCheck;
+
 public:
 	void Run(void (*test)(), std::string title)
 	{
@@ -39,7 +43,24 @@ public:
 	}
 
 protected:
-	virtual bool Checks() const = 0;
+	std::vector<SubCheck> _checks;
+
+	bool Checks() const
+	{
+		bool result = true;
+		for (size_t i = 0; i < this->_checks.size(); i++)
+		{
+			std::cout << " " << this->_checks[i].title << "?";
+			if (((T*)this->*(this->_checks[i]).func)())
+				this->OK();
+			else
+			{
+				this->KO();
+				result = false;
+			}
+		}
+		return result;
+	}
 
 	void OK() const
 	{

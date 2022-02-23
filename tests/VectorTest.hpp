@@ -3,37 +3,13 @@
 #include <vector>
 
 template<class T>
-class VectorTest : public PascalTest
+class VectorTest : public PascalTest<VectorTest<T> >
 {
-
-struct SubCheck
-{
-	bool (VectorTest<T>::*func)() const;
-	char const* title;
-};
-
-protected:
-	bool Checks() const
-	{
-		bool result = true;
-		for (size_t i = 0; i < _checks.size(); i++)
-		{
-			std::cout << " " << _checks[i].title << "?";
-			if ((this->*_checks[i].func)())
-				OK();
-			else
-			{
-				KO();
-				result = false;
-			}
-		}
-		return result;
-	}
+	typedef struct Check<VectorTest<T> > SubCheck; // also works with Check<VectorTest>, seems weird?
 
 private:
 	ft::vector<T> _ftVec;
 	std::vector<T> _stdVec;
-	std::vector<SubCheck> _checks;
 
 	// Returns whether ft::vector and std::vector are equal in size.
 	bool CheckSize() const
@@ -59,9 +35,9 @@ private:
 public:
 	VectorTest()
 	{
-		_checks.push_back((SubCheck){.func = &VectorTest<T>::CheckSize, .title = "Size"});
-		_checks.push_back((SubCheck){.func = &VectorTest<T>::CheckCapacity, .title = "Capacity"});
-		_checks.push_back((SubCheck){.func = &VectorTest<T>::CheckData, .title = "Data"});
+		this->_checks.push_back((SubCheck){.func = &VectorTest<T>::CheckSize, .title = "Size"});
+		this->_checks.push_back((SubCheck){.func = &VectorTest<T>::CheckCapacity, .title = "Capacity"});
+		this->_checks.push_back((SubCheck){.func = &VectorTest<T>::CheckData, .title = "Data"});
 	}
 
 	// Clear the currently stored vectors.
