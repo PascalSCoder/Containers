@@ -2,6 +2,7 @@
 #include <vector>
 #include <iostream>
 
+#include "PascalTest.hpp"
 #include "VectorTest.hpp"
 
 VectorTest<int> vectors;

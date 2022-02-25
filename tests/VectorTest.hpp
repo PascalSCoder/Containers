@@ -1,3 +1,4 @@
+#pragma once
 #include "../vector/Vector.hpp"
 #include "PascalTest.hpp"
 #include <vector>
@@ -10,6 +11,8 @@ class VectorTest : public PascalTest<VectorTest<T> >
 private:
 	ft::vector<T> _ftVec;
 	std::vector<T> _stdVec;
+
+	void AddChecks();
 
 #pragma region Checks
 
@@ -40,11 +43,8 @@ private:
 public:
 	VectorTest()
 	{
-		this->_checks.push_back((SubCheck){.func = &VectorTest<T>::CheckSize, .title = "Size"});
-		this->_checks.push_back((SubCheck){.func = &VectorTest<T>::CheckCapacity, .title = "Capacity"});
-		this->_checks.push_back((SubCheck){.func = &VectorTest<T>::CheckData, .title = "Data"});
+		AddChecks();
 	}
-
 
 #pragma region API
 
@@ -123,3 +123,6 @@ std::ostream& operator<<(std::ostream& os, VectorTest<T> const& ref)
 	}
 	return os;
 }
+
+
+#include "GeneratedVectorChecks.tpp"

@@ -1,0 +1,20 @@
+200,OK
+404,NOT_FOUND
+
+enum StatusCode {
+	NOT_FOUND = 404,
+}
+
+std::string status_codes[] = {
+	[NOT_FOUND] = "NOT_FOUND"
+}
+
+print("#include <...>")
+print("{} = \"{}\"", FOUND_STRING, FOUND_STRING);
+
+<CODE>
+<CODE_TO_REPLACE>
+<CODE>
+// @TEST_CASE_START
+
+// @TEST_CASE_END

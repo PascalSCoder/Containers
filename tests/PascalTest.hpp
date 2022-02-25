@@ -50,7 +50,7 @@ protected:
 		bool result = true;
 		for (size_t i = 0; i < this->_checks.size(); i++)
 		{
-			std::cout << " " << this->_checks[i].title << "?";
+			std::cout << " " << this->_checks[i].title << ":";
 			if (((T*)this->*(this->_checks[i]).func)())
 				this->OK();
 			else

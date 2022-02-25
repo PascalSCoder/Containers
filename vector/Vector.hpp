@@ -14,7 +14,6 @@ namespace ft
 template< class T, class Alloc = std::allocator<T> >
 class vector
 {
-public:
 
 #pragma region Type definitions
 
@@ -48,6 +47,8 @@ public:
 
 #pragma endregion
 
+public:
+
 #pragma region Constructors/Destructor
 
 	// default (1)
@@ -62,7 +63,7 @@ public:
 		_data = _alloc.allocate(n);
 		for (size_t i = 0; i < n; i++)
 		{
-			_alloc.construct(&(_data[i]), val);
+			_alloc.construct(_data + i, val);
 			_size++;
 		}
 	}
@@ -101,25 +102,26 @@ public:
 
 #pragma region Modifiers
 
-// UNFINISHED
 	// range (1)
 	template <class InputIterator>
 	void assign (InputIterator first, InputIterator last)
 	{
-		while (first++ != last)
+		clear();
+		MemReserve(last - first);
+		iterator pos = _data;
+		while (first != last)
 		{
-			push_back(*first);
+			_alloc.construct(pos, *first);
+			pos++;
+			first++;
 		}
 	}
 
-// UNFINISHED
 	// fill (2)
 	void assign (size_type n, const value_type& val)
 	{
-		for (size_type i = 0; i < n; i++)
-		{
-			push_back(val);
-		}
+		clear();
+		AssignInternal(_data, n, val);
 	}
 
 	void push_back(const value_type& val)
@@ -127,7 +129,7 @@ public:
 		MemReserve();
 
 		// add data to back
-		_data[_size] = val;
+		_alloc.construct(_data + _size, val);
 		_size++;
 	}
 
@@ -137,7 +139,6 @@ public:
 		_alloc.destroy(&_data[_size]);
 	}
 
-// UNFINISHED
 	// single element (1)
 	// Returns an iterator that points to the first of the newly inserted elements.
 	iterator insert (iterator position, const value_type& val)
@@ -145,12 +146,11 @@ public:
 		size_type pos = position - begin();
 		MemReserve();
 		iterator first = MoveData(pos, 1);
-		*first = val; // need to call _alloc.construct(val) here?
+		_alloc.construct(first, val);
 		_size++;
 		return first;
 	}
 
-// UNFINISHED
 	// fill (2)
 	void insert (iterator position, size_type n, const value_type& val)
 	{
@@ -159,12 +159,11 @@ public:
 		iterator first = MoveData(pos, n);
 		for (size_type i = 0; i < n; i++)
 		{
-			first[i] = val; // need to call _alloc.construct(val) here?
+			_alloc.construct(first + i, val);
 		}
 		_size += n;
 	}
 
-// UNFINISHED
 	// range (3)
 	template <class InputIterator>
 	void insert (iterator position, InputIterator first, InputIterator last)
@@ -175,31 +174,33 @@ public:
 		iterator insertPos = MoveData(pos, n);
 		while (first != last)
 		{
-			*insertPos = *first;
+			_alloc.construct(insertPos, *first);
 			insertPos++;
 			first++;
 		}
 		_size += n;
 	}
 
-// UNFINISHED
 	iterator erase(iterator position)
 	{
 		_alloc.destroy(position);
-		std::cout << _data + _size - position << std::endl;
-		std::memmove(position, position + 1, (_data + _size) - position);
+		std::memmove(position, position + 1, (_data + _size - position) * sizeof(value_type));
+		_size--;
+
+		// std::cout << _data + _size - position << std::endl;
 		return position + 1;
 	}
 
-// UNFINISHED
 	iterator erase(iterator first, iterator last)
 	{
-		while (first < last)
+		size_type n = last - first;
+		while (first != last)
 		{
 			_alloc.destroy(first);
 			first++;
 		}
-		// move data
+		std::memmove(first - n, first, (end() - first) * sizeof(value_type));
+		return first - n;
 	}
 
 // UNFINISHED / UNTESTED
@@ -368,6 +369,8 @@ public:
 		return _alloc;
 	}
 
+#pragma region Friend functions
+
 	template <class TT, class Allocc>
 	friend bool operator==(const vector<TT,Allocc>& lhs, const vector<TT,Allocc>& rhs);
 	template <class TT, class Allocc>
@@ -381,12 +384,7 @@ public:
 	template <class TT, class Allocc>
 	friend bool operator<=(const vector<TT,Allocc>& lhs, const vector<TT,Allocc>& rhs);
 
-	// friend bool operator==(const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs);
-	// friend bool operator!=(const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs);
-	// friend bool operator> (const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs);
-	// friend bool operator>=(const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs);
-	// friend bool operator< (const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs);
-	// friend bool operator<=(const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs);
+#pragma endregion
 
 private:
 	value_type*		_data;
@@ -415,13 +413,15 @@ private:
 	void MemReserve()
 	{
 		if (_capacity == 0)
-			MemReserve(1);
+			MemReserve(1); // [_data = allocate(1); _capacity = 1;] would be faster, but reusing this function is nice :)
 		else if (_size == _capacity) // size should never by higher than capacity, so >= should not be neccessary
 			MemReserve(_capacity * 2);
-		else if (_size > _capacity) // TEMPORARY DEV CHECK WHICH SHOULD NOT BE REACHED, REMOVE BEFORE PUBLISH
+		else if (_size > _capacity) // TEMPORARY DEV CHECK WHICH SHOULD NOT BE REACHED
 			throw std::runtime_error("Size exceeded capacity exception.");
 	}
 
+	// Moves all data, starting at index by n elements.
+	// Returns a pointer to index, which now has 'garbage values'.
 	iterator MoveData(size_type index, size_type n)
 	{
 		iterator first = begin();
@@ -431,20 +431,15 @@ private:
 		return first;
 	}
 
-	// void	Realloc(size_type n)
-	// {
-	// 	value_type* newData = _alloc.allocate(n);
+	void AssignInternal(iterator pos, size_type n, const value_type& val)
+	{
+		MemReserve(n);
 
-	// 	// if there already was memory reserved, copy data and deallocate
-	// 	if (_capacity != 0)
-	// 	{
-	// 		std::memcpy(newData, _data, _size * sizeof(value_type));
-	// 		_alloc.deallocate(_data, _capacity);
-	// 	}
-
-	// 	_data = newData;
-	// 	_capacity = n;
-	// }
+		for (size_type i = 0; i < n; i++)
+		{
+			_alloc.construct(pos + i, val);
+		}
+	}
 
 };
 
