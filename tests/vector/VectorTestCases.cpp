@@ -73,11 +73,12 @@ void CaseAssignFill()
 	vectors.assign(10, 42);
 }
 
-// void CaseErase()
-// {
+void CaseErase()
+{
+	vectors.erase(5);
+}
 
-// }
-
-// void CaseEraseIter()
-// {
-// }
+void CaseEraseIter()
+{
+	vectors.erase(2, 6);
+}

@@ -42,7 +42,7 @@ private:
 	bool CheckCapacity() const
 	{
 		if (!(_ftVec.capacity() == _stdVec.capacity()))
-			throw std::runtime_error(to_string(_ftVec.capacity()) + "/" + to_string(_stdVec.capacity()));
+			throw std::runtime_error("FT: " + to_string(_ftVec.capacity()) + "| STL: " + to_string(_stdVec.capacity()));
 		return _ftVec.capacity() == _stdVec.capacity();
 	}
 

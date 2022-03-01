@@ -160,7 +160,6 @@ public:
 		std::memmove(position, position + 1, (_data + _size - position) * sizeof(value_type));
 		_size--;
 
-		// std::cout << _data + _size - position << std::endl;
 		return position + 1;
 	}
 
@@ -371,6 +370,7 @@ private:
 	{
 		if (req <= _capacity) // capacity is large enough
 			return;
+		req = std::max(_capacity * 2, req);
 
 		value_type* newData = _alloc.allocate(req);
 		if (_capacity != 0) // if _data was already allocated
