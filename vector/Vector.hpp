@@ -15,6 +15,8 @@ template< class T, class Alloc = std::allocator<T> >
 class vector
 {
 
+public:
+
 #pragma region Type definitions
 
 /*
@@ -32,22 +34,21 @@ class vector
 	size_type				an unsigned integral type that can represent any non-negative value of difference_type	usually the same as size_t
 */
 
-	typedef T									value_type;
-	typedef Alloc								allocator_type;
-	typedef value_type&							reference;
-	typedef value_type const&					const_reference;
-	typedef value_type*							pointer;
-	typedef const value_type*					const_pointer;
-	typedef T*									iterator;
-	typedef T const*							const_iterator;
+	typedef T										value_type;
+	typedef Alloc									allocator_type;
+	typedef value_type&								reference;
+	typedef value_type const&						const_reference;
+	typedef value_type*								pointer;
+	typedef const value_type*						const_pointer;
+	typedef T*										iterator;
+	typedef T const*								const_iterator;
 	typedef ft::reverse_iterator<iterator>			reverse_iterator;
 	typedef ft::reverse_iterator<const_iterator>	const_reverse_iterator; // reverse_iterator<const_iterator> const instead?
-	typedef ptrdiff_t							difference_type;
-	typedef size_t								size_type;
+	typedef ptrdiff_t								difference_type;
+	typedef size_t									size_type;
 
 #pragma endregion
 
-public:
 
 #pragma region Constructors/Destructor
 
@@ -60,42 +61,33 @@ public:
 	explicit vector (size_type n, const value_type& val = value_type(),
 					const allocator_type& alloc = allocator_type()) : _size(0), _capacity(n), _alloc(alloc)
 	{
-		_data = _alloc.allocate(n);
-		for (size_t i = 0; i < n; i++)
-		{
-			_alloc.construct(_data + i, val);
-			_size++;
-		}
+		AssignInternal(0, n, val);
 	}
 
 	// range (3)
 	template <class InputIterator>
 	vector(InputIterator first, InputIterator last, const allocator_type& alloc = allocator_type()) : _size(0), _capacity(0), _alloc(alloc)
 	{
-		while (first != last)
-		{
-			push_back(*first);
-			first++;
-		}
+		AssignInternal(0, first, last);
 	}
 
-// no copy ctor yet!
 	// copy (4)
 	vector(const vector& ref) : _size(0), _capacity(0), _alloc(ref._alloc)
 	{
-		// Realloc sets capacity
-		// Realloc(ref.size());
-		for (size_t i = 0; i < ref.size(); i++)
-		{
-			push_back(ref[i]);
-		}
-		// throw std::runtime_error("Not implemented yet!");
+		*this = ref;
 	}
 
-// no deallocation yet!
+	vector<T>& operator=(vector<T> const& ref)
+	{
+		clear();
+		AssignInternal(0, const_cast<iterator>(ref.begin()), const_cast<iterator>(ref.end()));
+		return *this;
+	}
+
 	~vector()
 	{
-		// _alloc.deallocate(_data, _capacity);
+		if (_capacity > 0)
+			_alloc.deallocate(_data, _capacity);
 	}
 
 #pragma endregion
@@ -107,28 +99,20 @@ public:
 	void assign (InputIterator first, InputIterator last)
 	{
 		clear();
-		MemReserve(last - first);
-		iterator pos = _data;
-		while (first != last)
-		{
-			_alloc.construct(pos, *first);
-			pos++;
-			first++;
-		}
+		AssignInternal(0, first, last);
 	}
 
 	// fill (2)
 	void assign (size_type n, const value_type& val)
 	{
 		clear();
-		AssignInternal(_data, n, val);
+		AssignInternal(0, n, val);
 	}
 
 	void push_back(const value_type& val)
 	{
 		MemReserve();
 
-		// add data to back
 		_alloc.construct(_data + _size, val);
 		_size++;
 	}
@@ -143,42 +127,31 @@ public:
 	// Returns an iterator that points to the first of the newly inserted elements.
 	iterator insert (iterator position, const value_type& val)
 	{
-		size_type pos = position - begin();
+		size_type i = position - _data;
 		MemReserve();
-		iterator first = MoveData(pos, 1);
-		_alloc.construct(first, val);
-		_size++;
-		return first;
+		MoveData(i, 1);
+		AssignInternal(i, 1, val);
+		return _data + i;
 	}
 
 	// fill (2)
 	void insert (iterator position, size_type n, const value_type& val)
 	{
-		size_type pos = position - begin();
+		size_type i = position - _data;
 		MemReserve(_size + n);
-		iterator first = MoveData(pos, n);
-		for (size_type i = 0; i < n; i++)
-		{
-			_alloc.construct(first + i, val);
-		}
-		_size += n;
+		MoveData(i, n);
+		AssignInternal(i, n, val);
 	}
 
 	// range (3)
 	template <class InputIterator>
 	void insert (iterator position, InputIterator first, InputIterator last)
 	{
-		size_type pos = position - begin();
+		size_type i = position - _data;
 		size_type n = last - first;
 		MemReserve(_size + n);
-		iterator insertPos = MoveData(pos, n);
-		while (first != last)
-		{
-			_alloc.construct(insertPos, *first);
-			insertPos++;
-			first++;
-		}
-		_size += n;
+		MoveData(i, n);
+		AssignInternal(i, first, last);
 	}
 
 	iterator erase(iterator position)
@@ -241,8 +214,6 @@ public:
 			_alloc.destroy(&_data[_size - 1]);
 			_size--;
 		}
-		// if (n > _capacity)
-			// n > _capacity * 2 ? Realloc(n) : Realloc(_capacity * 2);
 		while (_size < n)
 		{
 			_alloc.construct(&_data[_size], val);
@@ -262,6 +233,7 @@ public:
 
 	void reserve (size_type n)
 	{
+		(void)n;
 		// if (n > _capacity)
 			// Realloc(n);
 	}
@@ -301,18 +273,20 @@ public:
 		return reverse_iterator(end() - 1);
 	}
 
-	// const_reverse_iterator rbegin()
-	// {
-	// }
+	const_reverse_iterator rbegin() const
+	{
+		return reverse_iterator(end() - 1);
+	}
 
 	reverse_iterator rend()
 	{
 		return reverse_iterator(begin() - 1);
 	}
 
-	// const_reverse_iterator rend()
-	// {
-	// }
+	const_reverse_iterator rend() const
+	{
+		return reverse_iterator(begin() - 1);
+	}
 
 #pragma endregion
 
@@ -422,6 +396,7 @@ private:
 
 	// Moves all data, starting at index by n elements.
 	// Returns a pointer to index, which now has 'garbage values'.
+	// Caution: This function does not allocate when neccessary!
 	iterator MoveData(size_type index, size_type n)
 	{
 		iterator first = begin();
@@ -431,13 +406,28 @@ private:
 		return first;
 	}
 
-	void AssignInternal(iterator pos, size_type n, const value_type& val)
+	void AssignInternal(size_type index, size_type n, const value_type& val)
 	{
-		MemReserve(n);
+		MemReserve(_size + n);
 
-		for (size_type i = 0; i < n; i++)
+		_size += n;
+		n += index;
+		for (size_type i = index; i < n; i++)
 		{
-			_alloc.construct(pos + i, val);
+			_alloc.construct(_data + i, val);
+		}
+	}
+
+	void AssignInternal(size_type index, iterator first, iterator last)
+	{
+		MemReserve(_size + (last - first));
+		
+		while (first != last)
+		{
+			_alloc.construct(_data + index, *first);
+			++_size;
+			++first;
+			++index;
 		}
 	}
 

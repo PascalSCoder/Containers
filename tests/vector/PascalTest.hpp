@@ -21,6 +21,8 @@
 template<class T>
 struct Check
 {
+	Check(bool (T::*f)() const, char const* title) : func(f), title(title) {}
+
 	bool (T::*func)() const;
 	char const* title;
 };
@@ -51,12 +53,21 @@ protected:
 		for (size_t i = 0; i < this->_checks.size(); i++)
 		{
 			std::cout << " " << this->_checks[i].title << ":";
-			if (((T*)this->*(this->_checks[i]).func)())
-				this->OK();
-			else
+			try
+			{
+				if (((T*)this->*(this->_checks[i]).func)())
+					this->OK();
+				else
+				{
+					this->KO();
+					result = false;
+				}
+			}
+			catch(const std::exception& e)
 			{
 				this->KO();
 				result = false;
+				std::cerr << this->_checks[i].title << ": " << e.what() << "\n";
 			}
 		}
 		return result;

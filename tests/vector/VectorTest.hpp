@@ -1,7 +1,10 @@
 #pragma once
-#include "../vector/Vector.hpp"
+
+#include <Vector.hpp>
 #include "PascalTest.hpp"
 #include <vector>
+
+#include <string>
 
 template<class T>
 class VectorTest : public PascalTest<VectorTest<T> >
@@ -9,6 +12,20 @@ class VectorTest : public PascalTest<VectorTest<T> >
 	typedef struct Check<VectorTest<T> > SubCheck; // also works with Check<VectorTest>, seems weird?
 
 private:
+
+	std::string to_string(size_t n) const
+	{
+		std::string str;
+
+		while (1)
+		{
+			str.insert(str.begin(), n % 10 + '0');
+			if ((n /= 10) == 0)
+				break;
+		}
+		return str;
+	}
+
 	ft::vector<T> _ftVec;
 	std::vector<T> _stdVec;
 
@@ -24,6 +41,8 @@ private:
 
 	bool CheckCapacity() const
 	{
+		if (!(_ftVec.capacity() == _stdVec.capacity()))
+			throw std::runtime_error(to_string(_ftVec.capacity()) + "/" + to_string(_stdVec.capacity()));
 		return _ftVec.capacity() == _stdVec.capacity();
 	}
 
@@ -47,6 +66,12 @@ public:
 	}
 
 #pragma region API
+
+	void ConstructIter(T* first, T* last)
+	{
+		_ftVec = ft::vector<T>(first, last);
+		_stdVec = std::vector<T>(first, last);
+	}
 
 	// Clear the currently stored vectors.
 	void Clear()
@@ -88,6 +113,30 @@ public:
 		_stdVec.insert(_stdVec.begin() + position, begin, end);
 	}
 
+	void assign(size_t n, T const& val)
+	{
+		_ftVec.assign(n, val);
+		_stdVec.assign(n, val);
+	}
+
+	void assign(T* first, T* last)
+	{
+		_ftVec.assign(first, last);
+		_stdVec.assign(first, last);
+	}
+
+	void erase(size_t index)
+	{
+		_ftVec.erase(_ftVec.begin() + index);
+		_stdVec.erase(_stdVec.begin() + index);
+	}
+
+	void erase(size_t index, size_t n)
+	{
+		_ftVec.erase(_ftVec.begin() + index, _ftVec.begin() + index + n);
+		_stdVec.erase(_stdVec.begin() + index, _stdVec.begin() + index + n);
+	}
+
 #pragma endregion
 
 	template<class TT>
@@ -115,6 +164,7 @@ std::ostream& operator<<(std::ostream& os, VectorTest<T> const& ref)
 		typename ft::vector<T>::const_iterator last = ref._ftVec.end();
 
 		os << "ft (" << ref._ftVec.size() << "/" << ref._ftVec.capacity() << "): ";
+		// return os;
 		while (first != last)
 		{
 			os << "[" << *first << "]";
@@ -125,4 +175,4 @@ std::ostream& operator<<(std::ostream& os, VectorTest<T> const& ref)
 }
 
 
-#include "GeneratedVectorChecks.tpp"
+#include "GEN_VectorChecks.tpp"
