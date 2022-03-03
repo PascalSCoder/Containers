@@ -56,6 +56,55 @@ private:
 		return true;
 	}
 
+	bool CheckIters() const
+	{
+		if (_ftVec.size() != _stdVec.size())
+			return false;
+		if (_ftVec.size() == 0 && _stdVec.size() == 0)
+			return true;
+
+		if (*_ftVec.begin() != *_stdVec.begin())
+			throw std::runtime_error("begin diff");
+		if (*(_ftVec.end() - 1) != *(_stdVec.end() - 1))
+			throw std::runtime_error("end diff");
+		if (*_ftVec.rbegin() != *_stdVec.rbegin())
+			throw std::runtime_error("rbegin diff");
+		if (*(_ftVec.rend() - 1) != *(_stdVec.rend() - 1))
+			throw std::runtime_error("rend diff");
+		return true;
+	}
+
+	bool CheckElemAccess() const
+	{
+		if (_ftVec.size() != _stdVec.size())
+			return false;
+		if (_ftVec.size() == 0 && _stdVec.size() == 0)
+			return true;
+
+		if (_ftVec.front() != _stdVec.front())
+			throw std::runtime_error("front diff");
+		if (_ftVec.back() != _stdVec.back())
+			throw std::runtime_error("back diff");
+		return true;
+	}
+
+	bool CheckRelOperators() const
+	{
+		if ((_ftVec == _ftVec) != (_stdVec == _stdVec))
+			throw std::runtime_error("operator== diff");
+		if ((_ftVec != _ftVec) != (_stdVec != _stdVec))
+			throw std::runtime_error("operator!= diff");
+		if ((_ftVec >= _ftVec) != (_stdVec >= _stdVec))
+			throw std::runtime_error("operator>= diff");
+		if ((_ftVec <= _ftVec) != (_stdVec <= _stdVec))
+			throw std::runtime_error("operator<= diff");
+		if ((_ftVec > _ftVec) != (_stdVec > _stdVec))
+			throw std::runtime_error("operator< diff");
+		if ((_ftVec < _ftVec) != (_stdVec < _stdVec))
+			throw std::runtime_error("operator< diff");
+		return true;
+	}
+
 #pragma endregion
 
 
@@ -137,6 +186,36 @@ public:
 		_stdVec.erase(_stdVec.begin() + index, _stdVec.begin() + index + n);
 	}
 
+	void resize(size_t size)
+	{
+		_ftVec.resize(size);
+		_stdVec.resize(size);
+	}
+
+	void clear()
+	{
+		_ftVec.clear();
+		_stdVec.clear();
+	}
+
+	void swap(T* first, T* last)
+	{
+		ft::vector<int> ftVec;
+		std::vector<int> stdVec;
+
+		ftVec.assign(first, last);
+		stdVec.assign(first, last);
+
+		_ftVec.swap(ftVec);
+		_stdVec.swap(stdVec);
+	}
+
+	void reserve(size_t n)
+	{
+		_ftVec.reserve(n);
+		_stdVec.reserve(n);
+	}
+
 #pragma endregion
 
 	template<class TT>
@@ -152,11 +231,11 @@ std::ostream& operator<<(std::ostream& os, VectorTest<T> const& ref)
 		typename std::vector<T>::const_iterator last = ref._stdVec.end();
 
 		os << "std (" << ref._stdVec.size() << "/" << ref._stdVec.capacity() << "): ";
-		while (first != last)
-		{
-			os << "[" << *first << "]";
-			first++;
-		}
+		// while (first != last)
+		// {
+		// 	os << "[" << *first << "]";
+		// 	first++;
+		// }
 		os << std::endl;
 	}
 	{
@@ -164,12 +243,11 @@ std::ostream& operator<<(std::ostream& os, VectorTest<T> const& ref)
 		typename ft::vector<T>::const_iterator last = ref._ftVec.end();
 
 		os << "ft (" << ref._ftVec.size() << "/" << ref._ftVec.capacity() << "): ";
-		// return os;
-		while (first != last)
-		{
-			os << "[" << *first << "]";
-			first++;
-		}
+		// while (first != last)
+		// {
+		// 	os << "[" << *first << "]";
+		// 	first++;
+		// }
 	}
 	return os;
 }

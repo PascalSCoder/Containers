@@ -62,8 +62,8 @@ template <class Iterator>
 struct iterator_traits<Iterator const*>
 {
 	typedef ptrdiff_t					difference_type;
-	typedef Iterator					value_type;
-	typedef Iterator*					pointer;
-	typedef Iterator&					reference;
+	typedef Iterator const				value_type;
+	typedef Iterator const*				pointer;
+	typedef Iterator const&				reference;
 	typedef random_access_iterator_tag	iterator_category;
 };

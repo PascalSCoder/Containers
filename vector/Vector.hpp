@@ -111,7 +111,7 @@ public:
 
 	void push_back(const value_type& val)
 	{
-		MemReserve();
+		MemReserve(_size + 1);
 
 		_alloc.construct(_data + _size, val);
 		_size++;
@@ -128,7 +128,7 @@ public:
 	iterator insert (iterator position, const value_type& val)
 	{
 		size_type i = position - _data;
-		MemReserve();
+		MemReserve(_size + 1);
 		MoveData(i, 1);
 		AssignInternal(i, 1, val);
 		return _data + i;
@@ -172,15 +172,23 @@ public:
 			first++;
 		}
 		std::memmove(first - n, first, (end() - first) * sizeof(value_type));
+		_size -= n;
 		return first - n;
 	}
 
-// UNFINISHED / UNTESTED
 	void swap(vector& x)
 	{
-		vector tmp = x;
-		x = *this;
-		*this = tmp;
+		T*	data = _data;
+		size_type size = _size;
+		size_type capacity = _capacity;
+
+		_data = x._data;
+		_size = x._size;
+		_capacity = x._capacity;
+
+		x._data = data;
+		x._size = size;
+		x._capacity = capacity;
 	}
 
 	void clear()
@@ -208,6 +216,7 @@ public:
 
 	void resize(size_type n, value_type val = value_type())
 	{
+		MemReserve(n);
 		while (_size > n)
 		{
 			_alloc.destroy(&_data[_size - 1]);
@@ -232,9 +241,7 @@ public:
 
 	void reserve (size_type n)
 	{
-		(void)n;
-		// if (n > _capacity)
-			// Realloc(n);
+		MemReserve(n);
 	}
 
 #pragma endregion
@@ -274,7 +281,7 @@ public:
 
 	const_reverse_iterator rbegin() const
 	{
-		return reverse_iterator(end() - 1);
+		return const_reverse_iterator(end() - 1);
 	}
 
 	reverse_iterator rend()
@@ -284,7 +291,7 @@ public:
 
 	const_reverse_iterator rend() const
 	{
-		return reverse_iterator(begin() - 1);
+		return const_reverse_iterator(begin() - 1);
 	}
 
 #pragma endregion
@@ -384,15 +391,15 @@ private:
 	}
 
 	// If full capacity is used, increase capacity.
-	void MemReserve()
-	{
-		if (_capacity == 0)
-			MemReserve(1); // [_data = allocate(1); _capacity = 1;] would be faster, but reusing this function is nice :)
-		else if (_size == _capacity) // size should never by higher than capacity, so >= should not be neccessary
-			MemReserve(_capacity * 2);
-		else if (_size > _capacity) // TEMPORARY DEV CHECK WHICH SHOULD NOT BE REACHED
-			throw std::runtime_error("Size exceeded capacity exception.");
-	}
+	// void MemReserve()
+	// {
+	// 	if (_capacity == 0)
+	// 		MemReserve(1); // [_data = allocate(1); _capacity = 1;] would be faster, but reusing this function is nice :)
+	// 	else if (_size == _capacity) // size should never by higher than capacity, so >= should not be neccessary
+	// 		MemReserve(_capacity * 2);
+	// 	else if (_size > _capacity) // TEMPORARY DEV CHECK WHICH SHOULD NOT BE REACHED
+	// 		throw std::runtime_error("Size exceeded capacity exception.");
+	// }
 
 	// Moves all data, starting at index by n elements.
 	// Returns a pointer to index, which now has 'garbage values'.
@@ -433,6 +440,9 @@ private:
 
 };
 
+
+// CREATE MORE EFFICIENT COMPARISON FUNCTIONS
+
 #pragma region Comparison Overloads
 
 	template <class T, class Alloc>
@@ -470,24 +480,33 @@ private:
 	template <class T, class Alloc>
 	bool operator>=(const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs)
 	{
-		(void)lhs;
-		(void)rhs;
+		if (lhs > rhs)
+			return true;
+		else if(lhs == rhs)
+			return true;
 		return false;
 	}
 
 	template <class T, class Alloc>
 	bool operator< (const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs)
 	{
-		(void)lhs;
-		(void)rhs;
+		for (size_t i = 0; i < rhs.size(); i++)
+		{
+			if (lhs[i] < rhs[i])
+				return true;
+		}
+		if (lhs.size() < rhs.size())
+			return true;
 		return false;
 	}
 
 	template <class T, class Alloc>
 	bool operator<=(const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs)
 	{
-		(void)lhs;
-		(void)rhs;
+		if (lhs < rhs)
+			return true;
+		else if (lhs == rhs)
+			return true;
 		return false;
 	}
 

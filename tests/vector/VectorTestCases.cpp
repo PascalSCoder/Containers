@@ -82,3 +82,30 @@ void CaseEraseIter()
 {
 	vectors.erase(2, 6);
 }
+
+void CaseResize()
+{
+	vectors.resize(123);
+}
+
+void CaseClear()
+{
+	vectors.clear();
+}
+
+void CaseSwap()
+{
+	int* ints = new int[12];
+	vectors.swap(ints, ints + 12);
+	delete[] ints;
+}
+
+void CaseReserveSmall()
+{
+	vectors.reserve(3);
+}
+
+void CaseReserveLarge()
+{
+	vectors.reserve(123456);
+}
