@@ -1,13 +1,13 @@
 NAME		:=	vector_test.out
-VEC_DIR		:=	../../vector/
+INCLUDE		:=	../../include/
 
 CC			:=	g++
-CFLAGS		:=	-Wall -Wextra -pedantic -I$(VEC_DIR)
+CFLAGS		:=	-Wall -Wextra -pedantic -I$(INCLUDE)
 OBJDIR		:=	obj/
 
 
 HPPS		:=	PascalTest.hpp\
-				$(VEC_DIR)Vector.hpp
+				$(INCLUDE)Vector.hpp
 
 OBJS		:=	$(addprefix $(OBJDIR),\
 				VectorTestCases.o\
@@ -16,7 +16,7 @@ OBJS		:=	$(addprefix $(OBJDIR),\
 GENERATED	:=	GEN_VectorChecks.tpp\
 				GEN_main.cpp
 
-$(NAME): $(OBJS) $(OBJS:$(OBJDIR)%.o: %.cpp) $(HPPS)
+$(NAME): $(OBJS) $(OBJS:$(OBJDIR)%.o: %.cpp) $(HPPS) $(GENERATED)
 	$(CC) $(CFLAGS) $(OBJS) -o $(NAME)
 
 $(OBJDIR)%.o: %.cpp $(HPPS) | generate
