@@ -16,16 +16,14 @@ typedef T2	second_type;
 
 	// copy (2)	
 	template<class U, class V>
-	pair (const pair<U,V>& pr)
+	pair (const pair<U, V>& pr)
 	{
 		*this = pr;
 	}
 
 	// initialization (3)	
-	pair (const first_type& a, const second_type& b)
+	pair (const first_type& a, const second_type& b) : first(a), second(b)
 	{
-		first = a;
-		second = b;
 	}
 
 	pair& operator= (const pair& pr)
