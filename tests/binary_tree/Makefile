@@ -7,7 +7,7 @@ OBJDIR	:=	obj/
 
 SRC		:=	main.cpp
 OBJ		:=	$(addprefix $(OBJDIR), $(SRC:%.cpp=%.o))
-HPP		:=	$(addprefix $(INCLUDE), utils/binary_tree.hpp)
+HPP		:=	$(addprefix $(INCLUDE), utils/BST.hpp)
 
 all: $(NAME)
 

@@ -3,16 +3,16 @@
 #include <functional>
 #include <utility>
 #include <map>
-#include "../utils/bidirectional_iterator.hpp"
-#include "../utils/binary_tree.hpp"
+#include <utils/bidirectional_iterator.hpp>
+#include <utils/BST.hpp>
 
 namespace ft
 {
 
 template <	class _Key,													// map::key_type
 			class _T,													// map::mapped_type
-			class Compare = std::less<_Key>,							// map::key_compare
-			class Alloc = std::allocator<std::pair<const _Key, _T> >	// map::allocator_type
+			class _Compare = std::less<_Key>,							// map::key_compare
+			class _Alloc = std::allocator<std::pair<const _Key, _T> >	// map::allocator_type
 			>
 class map
 {
@@ -37,9 +37,9 @@ public:
 
 	typedef _Key									key_type;
 	typedef _T										mapped_type;
-	typedef std::pair<const key_type, mapped_type>	value_type;
-	typedef Compare									key_compare;
-	typedef Alloc									allocator_type;
+	typedef std::pair<const key_type, mapped_type>	value_type; // set to ft::pair
+	typedef _Compare								key_compare;
+	typedef _Alloc									allocator_type;
 	typedef value_type&								reference;
 	typedef const value_type&						const_reference;
 	typedef typename allocator_type::pointer		pointer;
@@ -47,10 +47,10 @@ public:
 	typedef ptrdiff_t								difference_type;
 	typedef size_t									size_type;
 
-	typedef typename bidirectional_iterator<value_type>			iterator;
-	typedef typename bidirectional_iterator<value_type const>	const_iterator;
-	typedef typename reverse_iterator<iterator>			reverse_iterator;
-	typedef typename reverse_iterator<const_iterator>	const_reverse_iterator;
+	// typedef typename bidirectional_iterator<value_type>			iterator;
+	// typedef typename bidirectional_iterator<value_type const>	const_iterator;
+	// typedef typename reverse_iterator<iterator>			reverse_iterator;
+	// typedef typename reverse_iterator<const_iterator>	const_reverse_iterator;
 
 #pragma region Constructors/Destructors
 
@@ -77,9 +77,9 @@ public:
 
 #pragma endregion
 
-	mapped_type& operator[] (const key_type& k)
-	{
-	}
+	// mapped_type& operator[] (const key_type& k)
+	// {
+	// }
 
 #pragma region Iterators
 
@@ -129,7 +129,7 @@ public:
 		return _size;
 	}
 
-	size_type size() const
+	size_type max_size() const
 	{
 		return _alloc.max_size();
 	}
@@ -140,8 +140,11 @@ public:
 
 	// single element (1)
 	// pair<iterator,bool> insert (const value_type& val)
-	// {
-	// }
+	void insert (const value_type& val)
+	{
+		_data.Insert(val);
+		std::cout << _data << std::endl;
+	}
 
 	// with hint (2)
 	// iterator insert (iterator position, const value_type& val)
@@ -239,11 +242,11 @@ public:
 	}
 
 private:
-	BST<value_type> _data;
+	BST<allocator_type> _data;
+	// BST<value_type> _data;
 	size_type		_size;
-	size_type		_capacity;
-	allocator_type	_alloc;
 	key_compare		_comp;
+	allocator_type	_alloc;
 };
 
 }

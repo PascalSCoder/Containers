@@ -33,8 +33,8 @@ typedef T2	second_type;
 		return *this;
 	}
 
-	T1 first;
-	T2 second;
+	first_type first;
+	second_type second;
 };
 
 template <class T1, class T2>
