@@ -143,7 +143,7 @@ public:
 	void insert (const value_type& val)
 	{
 		_data.Insert(val);
-		std::cout << _data << std::endl;
+		std::cout << "Inserted!\n" << _data << std::endl;
 	}
 
 	// with hint (2)

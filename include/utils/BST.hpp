@@ -42,13 +42,14 @@ public:
 	}
 
 	// Allocates a new node and inserts it on the right position according to key in tree.
-	// Returns the new node 
+	// Returns the new node
 	node_type* Insert(pair_type const& pair)
 	{
 		node_type* branch = _tree;
 
 		while (branch != nullptr) // Traverse tree
 		{
+			std::cout << "Traversing" << std::endl;
 			if (pair.first < branch->pair.first)
 			{
 				if (branch->left != nullptr)
@@ -66,6 +67,7 @@ public:
 		}
 
 		node_type* node = _alloc.allocate(1);
+		_alloc.construct(node, node_type(pair));
 		if (branch != nullptr) // branch = parent, now insert left or right
 		{
 			node->parent = branch;
@@ -75,7 +77,10 @@ public:
 				branch->right = node;
 		}
 		else // branch = root, set root to new node
+		{
+			std::cout << "Root set" << std::endl;
 			_tree = node;
+		}
 		return node;
 	}
 
