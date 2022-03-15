@@ -8,5 +8,5 @@ struct BSTNode
 	BSTNode*	parent;
 	_Pair		pair;
 
-	BSTNode(_Pair& ref) : left(nullptr), right(nullptr), parent(nullptr), pair(ref) {}
+	BSTNode(_Pair const& ref) : left(nullptr), right(nullptr), parent(nullptr), pair(ref) {}
 };

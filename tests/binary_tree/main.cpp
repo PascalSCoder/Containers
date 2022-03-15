@@ -1,5 +1,5 @@
 #include <utils/BST.hpp>
-#include <utils/Pair.hpp>
+#include <utils/pair.hpp>
 #include <iostream>
 
 #include <map>
@@ -27,8 +27,13 @@
 int main()
 {
 	ft::map<int, int> map;
-	// std::map<int, int> stdMap;
 	map.insert(std::pair<int, int>(1, 42));
+	map.insert(std::pair<int, int>(-12, 42));
+	map.insert(std::pair<int, int>(5, 42));
+	map.insert(std::pair<int, int>(8, 42));
+	map.insert(std::pair<int, int>(4, 42));
+	map.insert(std::pair<int, int>(-9, 42));
+	map.insert(std::pair<int, int>(0, 42));
 
 	// ft::BST<ft::pair<int, int> > bst;
 	// std::allocator<ft::pair<int, int>> alloc;

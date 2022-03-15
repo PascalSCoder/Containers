@@ -4,6 +4,7 @@
 #include <iostream>
 #include <limits>
 #include <stdexcept>
+#include <cstring>
 
 #include "utils/iterator_traits.hpp"
 #include "utils/reverse_iterator.hpp"

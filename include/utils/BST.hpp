@@ -1,7 +1,7 @@
 #pragma once
 
 #include <iostream>
-#include <utils/Pair.hpp>
+#include <utils/pair.hpp>
 #include <utils/BSTNode.hpp>
 
 namespace ft
@@ -49,7 +49,6 @@ public:
 
 		while (branch != nullptr) // Traverse tree
 		{
-			std::cout << "Traversing" << std::endl;
 			if (pair.first < branch->pair.first)
 			{
 				if (branch->left != nullptr)
