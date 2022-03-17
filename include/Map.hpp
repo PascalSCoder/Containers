@@ -61,10 +61,10 @@ public:
 	}
 
 	// range (2)
-// template <class InputIterator>
-// 	map (InputIterator first, InputIterator last,
-// 		const key_compare& comp = key_compare(),
-// 		const allocator_type& alloc = allocator_type());
+	// template <class InputIterator>
+	// 	map (InputIterator first, InputIterator last,
+	// 		const key_compare& comp = key_compare(),
+	// 		const allocator_type& alloc = allocator_type());
 
 	// copy (3)
 	// map (const map& x)
@@ -143,7 +143,7 @@ public:
 	void insert (const value_type& val)
 	{
 		_data.Insert(val);
-		std::cout << "Inserted!\n" << _data << std::endl;
+		// std::cout << "Inserted!\n" << _data << std::endl;
 	}
 
 	// with hint (2)
@@ -161,6 +161,12 @@ public:
 	// void erase (iterator position)
 	// {
 	// }
+
+	void RemoveKey(int key)
+	{
+		std::cout << _data << std::endl;
+		_data.Remove(key);
+	}
 
 	// with key (2)
 	// size_type erase (const key_type& k)

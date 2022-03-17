@@ -28,7 +28,7 @@ public:
 		_alloc = alloc;
 	}
 
-	pair_type& Search(key_type const& key)
+	value_type& Search(key_type const& key)
 	{
 		node_type* branch = _tree;
 		while (branch != nullptr && branch->pair.first != key)
@@ -39,6 +39,69 @@ public:
 				branch = branch->right;
 		}
 		return branch->pair;
+	}
+
+// make private?
+	node_type* SearchNode(key_type const& key)
+	{
+		node_type* branch = _tree;
+		while (branch != nullptr && branch->pair.first != key)
+		{
+			if (key < branch->pair.first)
+				branch = branch->left;
+			else
+				branch = branch->right;
+		}
+		return branch;
+	}
+
+	node_type* TraverseRight(node_type* branch, int* depth)
+	{
+		if (branch == nullptr)
+			return nullptr;
+		while (1)
+		{
+			(*depth)++;
+			if (branch->right != nullptr)
+				branch = branch->right;
+			else
+				break;
+		}
+		return branch;
+	}
+
+	node_type* TraverseLeft(node_type* branch, int* depth)
+	{
+		if (branch == nullptr)
+			return nullptr;
+		while (1)
+		{
+			(*depth)++;
+			if (branch->left != nullptr)
+				branch = branch->left;
+			else
+				break;
+		}
+		return branch;
+	}
+
+	bool Remove(key_type const& key)
+	{
+		node_type* node = SearchNode(key);
+
+		int left = 0, right = 0;
+		node_type* deepestLeft = TraverseRight(node->left, &left);
+		node_type* deepestRight = TraverseLeft(node->right, &right);
+		std::cout << "left: " << left << " | right: " << right << std::endl;
+		if (left >= right)
+		{
+			std::cout << "Should move " << deepestLeft->pair.first << " to the place of " << key << std::endl;
+		}
+		else
+		{
+			std::cout << "Should move " << deepestRight->pair.first << " to the place of " << key << std::endl;
+		}
+		return true;
 	}
 
 	// Allocates a new node and inserts it on the right position according to key in tree.

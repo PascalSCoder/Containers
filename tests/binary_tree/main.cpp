@@ -31,24 +31,13 @@ int main()
 	map.insert(std::pair<int, int>(-12, 42));
 	map.insert(std::pair<int, int>(5, 42));
 	map.insert(std::pair<int, int>(8, 42));
+	map.insert(std::pair<int, int>(7, 42));
 	map.insert(std::pair<int, int>(4, 42));
 	map.insert(std::pair<int, int>(-9, 42));
 	map.insert(std::pair<int, int>(0, 42));
+	map.RemoveKey(5);
 
 	// ft::BST<ft::pair<int, int> > bst;
-	// std::allocator<ft::pair<int, int>> alloc;
-
-	// bst.Insert(alloc.construct());
-	// bst.Insert(new ft::pair<int, int>(13, 5));
-	// bst.Insert(new ft::pair<int, int>(7, 5));
-	// bst.Insert(new ft::pair<int, int>(15, 5));
-	// bst.Insert(new ft::pair<int, int>(12, 5));
-	// bst.Insert(new ft::pair<int, int>(1, 5));
-	// bst.Insert(new ft::pair<int, int>(6, 5));
-	// bst.Insert(new ft::pair<int, int>(18, 5));
-	// bst.Insert(new ft::pair<int, int>(11, 5));
-	// bst.Insert(new ft::pair<int, int>(3, 42));
-	// bst.Insert(new ft::pair<int, int>(20, 5));
 
 	// ft::pair<int, int> result = bst.Search(3);
 	// std::cout << "result: " << result->second << std::endl;
