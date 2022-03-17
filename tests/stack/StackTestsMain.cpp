@@ -2,8 +2,6 @@
 #include <iostream>
 #include <vector>
 
-#include "PascalTest.hpp"
-
 int main()
 {
 	int arr[] =

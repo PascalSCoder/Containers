@@ -3,7 +3,7 @@
 #include <vector>
 #include <iostream>
 
-#include "../stack/Stack.hpp"
+#include "../../include/Stack.hpp"
 #include <stack>
 #include <iomanip>
 

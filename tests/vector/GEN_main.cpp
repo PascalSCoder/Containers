@@ -15,12 +15,6 @@ void CaseConstructBadIter();
 void CaseAssignRange();
 void CaseAssignFill();
 void CaseErase();
-void CaseEraseIter();
-void CaseResize();
-void CaseClear();
-void CaseSwap();
-void CaseReserveSmall();
-void CaseReserveLarge();
 
 int main()
 {
@@ -35,10 +29,4 @@ int main()
 	vectors.Run(CaseAssignRange, "CaseAssignRange");
 	vectors.Run(CaseAssignFill, "CaseAssignFill");
 	vectors.Run(CaseErase, "CaseErase");
-	vectors.Run(CaseEraseIter, "CaseEraseIter");
-	vectors.Run(CaseResize, "CaseResize");
-	vectors.Run(CaseClear, "CaseClear");
-	vectors.Run(CaseSwap, "CaseSwap");
-	vectors.Run(CaseReserveSmall, "CaseReserveSmall");
-	vectors.Run(CaseReserveLarge, "CaseReserveLarge");
 }
